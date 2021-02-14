@@ -1,6 +1,7 @@
 from __future__ import absolute_import
 import sys
 import json
+import os
 
 
 # shellcheck disable=SC1036  # Hold-over from previous iteration.
@@ -90,6 +91,8 @@ def run(previous_task_definition, container_image_name_updates,
                         container_definitions[container_index]['image'] = image_value + tag
                     elif image_specifier_type == 'tag':
                         container_definitions[container_index]['image'] = existing_image_name_tokens[0] + ':' + image_value
+                    elif os.environment.get('IMAGE_TAG', None):
+                      container_definitions[container_index]['image'] = existing_image_name_tokens[0] + ':' + os.environment.['IMAGE_TAG']
                     else:
                         raise ValueError(
                             'Image name update parameter format is incorrect: ' + container_image_name_updates)
