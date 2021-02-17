@@ -2,7 +2,7 @@ version: 2.1
 
 orbs:
   # Replace this with your own!
-  aws-ecs: circleci/aws-ecs@<<pipeline.parameters.dev-orb-version>>
+  aws-ecs: breezeshow/aws-ecs@<<pipeline.parameters.dev-orb-version>>
   aws-cli: circleci/aws-cli@1.3
   orb-tools: circleci/orb-tools@10.0
   # bats: circleci/bats@1.0
@@ -448,7 +448,7 @@ workflows:
             - shellcheck/check
       # Publish development version(s) of the orb.
       - orb-tools/publish-dev:
-          orb-name: circleci/aws-ecs
+          orb-name: breezeshow/aws-ecs
           context: orb-publishing # A restricted context containing your private publishing credentials. Will only execute if approved by an authorized user.
           requires: [hold-for-dev-publish]
       # Trigger an integration workflow to test the
@@ -714,7 +714,7 @@ workflows:
       # be skipped.
       # e.g. [semver:patch] will cause a patch version to be published.
       - orb-tools/dev-promote-prod-from-commit-subject:
-          orb-name: circleci/aws-ecs
+          orb-name: breezeshow/aws-ecs
           context: orb-publishing
           add-pr-comment: false
           fail-if-semver-not-indicated: true
