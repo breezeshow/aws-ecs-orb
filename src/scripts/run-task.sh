@@ -41,6 +41,19 @@ if [ "$ECS_PARAM_PROPAGATE_TAGS" == "1" ]; then
 fi
 if [ "$ECS_PARAM_AWSVPC" == "1" ]; then
     echo "Setting --network-configuration"
+    if [ -n "$ECS_COPY_NETWORK_FROM_SERVICE" ]; then
+        SERVICE_JSON=$(aws ecs describe-services --services $ECS_COPY_NETWORK_FROM_SERVICE --cluster $ECS_PARAM_CLUSTER_NAME)
+        if [ -n "$SERVICE_JSON" ]; then
+            ECS_PARAM_SUBNET_ID=$(echo $SERVICE_JSON | jq -c '.services[0].networkConfiguration.awsvpcConfiguration.subnets' | tr -d '[]"')
+            ECS_PARAM_SEC_GROUP_ID=$(echo $SERVICE_JSON | jq -c '.services[0].networkConfiguration.awsvpcConfiguration.securityGroups' | tr -d '[]"')
+            ECS_PARAM_ASSIGN_PUB_IP=$(echo $SERVICE_JSON | jq -c '.services[0].networkConfiguration.awsvpcConfiguration.assignPublicIp' | tr -d '[]"')
+        else
+            echo "Cannot query serive $ECS_COPY_NETWORK_FROM_SERVICE in cluster $ECS_PARAM_CLUSTER_NAME"
+            exit 1
+        fi
+    fi
+
+
     if [ -z "$ECS_PARAM_SUBNET_ID" ]; then
         echo '"subnet-ids" is missing.'
         echo 'When "awsvpc" is enabled, "subnet-ids" must be provided.'

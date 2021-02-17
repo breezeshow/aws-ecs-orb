@@ -73,6 +73,13 @@ parameters:
       Expected Format: subnet-70faa93b,subnet-bcc54b93
     type: string
     default: ''
+  service:
+    description: |
+      the service name to copy all the network setting from, like subnets,
+      secGroupName and assign-public
+      e.g: my-service
+    type: string
+    default: ''
   security-group-ids:
     description: |
       List of security group ids separated by commas.
@@ -117,6 +124,7 @@ steps:
       name: Run Task
       command: <<include(scripts/run-task.sh)>>
       environment:
+        ECS_COPY_NETWORK_FROM_SERVICE: <<parameters.service>>
         ECS_PARAM_CLUSTER_NAME: <<parameters.cluster>>
         ECS_PARAM_TASK_DEF: <<parameters.task-definition>>
         ECS_PARAM_COUNT: <<parameters.count>>

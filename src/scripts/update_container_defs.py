@@ -79,7 +79,7 @@ def run(previous_task_definition, container_image_name_updates,
                     raise ValueError('The container ' + container_name + ' is not defined in the existing task definition')
                 container_index = container_entry['index']
                 image_specifier_type = image_kv[0].strip()
-                image_value = image_kv[1].strip()
+                image_value = get_image_value(image_kv[1].strip())
                 if image_specifier_type == 'image-and-tag':
                     container_definitions[container_index]['image'] = image_value
                 else:
@@ -91,8 +91,6 @@ def run(previous_task_definition, container_image_name_updates,
                         container_definitions[container_index]['image'] = image_value + tag
                     elif image_specifier_type == 'tag':
                         container_definitions[container_index]['image'] = existing_image_name_tokens[0] + ':' + image_value
-                    elif os.environment.get('IMAGE_TAG', None):
-                      container_definitions[container_index]['image'] = existing_image_name_tokens[0] + ':' + os.environment.['IMAGE_TAG']
                     else:
                         raise ValueError(
                             'Image name update parameter format is incorrect: ' + container_image_name_updates)
@@ -104,6 +102,16 @@ def run(previous_task_definition, container_image_name_updates,
     except:
         raise Exception('Image name update parameter could not be processed; please check parameter value: ' + container_image_name_updates)
     return json.dumps(container_definitions)
+
+def get_image_value(name):
+    if name.startswith('ENV:'):
+        env = name.split(':')[1]
+        if os.environ.get(env, None):
+           return os.environ.get(env)
+        raise Exception('Excepted environment not found: ' + env)
+    else:
+        return name
+
 
 
 if __name__ == '__main__':

@@ -156,11 +156,15 @@ parameters:
       Whether to skip registration of a new task definition.
     type: boolean
     default: false
+
+working_directory: /tmp/
 steps:
   - aws-cli/setup:
       aws-access-key-id: << parameters.aws-access-key-id >>
       aws-secret-access-key: << parameters.aws-secret-access-key >>
       aws-region: << parameters.aws-region >>
+  - attach_workspace:
+      at: /tmp/workspace
   - update-service:
       family: << parameters.family >>
       cluster-name: << parameters.cluster-name >>

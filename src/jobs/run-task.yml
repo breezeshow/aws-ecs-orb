@@ -82,6 +82,13 @@ parameters:
       specified for tasks using the Fargate launch type."
     type: string
     default: LATEST
+  service:
+    description: |
+      the service name to copy all the network setting from, like subnets,
+      secGroupName and assign-public
+      e.g: my-service
+    type: string
+    default: ''
   awsvpc:
     description: |
       "Does your task definition use awsvpc mode or not. If so,
@@ -161,6 +168,7 @@ steps:
       launch-type: << parameters.launch-type >>
       platform-version: << parameters.platform-version >>
       awsvpc: << parameters.awsvpc >>
+      service: << parameters.service >>
       subnet-ids: << parameters.subnet-ids >>
       security-group-ids: << parameters.security-group-ids >>
       assign-public-ip: << parameters.assign-public-ip >>

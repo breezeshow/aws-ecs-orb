@@ -1,5 +1,11 @@
 set -o noglob
 
+. $BASH_ENV
+
+. workspace/new-env-vars
+
+echo "Updating with $IMAGE_TAG"
+
 # These variables are evaluated so the config file may contain and pass in environment variables to the parameters.
 ECS_PARAM_FAMILY=$(eval echo "$ECS_PARAM_FAMILY")
 ECS_PARAM_CONTAINER_IMAGE_NAME_UPDATES=$(eval echo "$ECS_PARAM_CONTAINER_IMAGE_NAME_UPDATES")
