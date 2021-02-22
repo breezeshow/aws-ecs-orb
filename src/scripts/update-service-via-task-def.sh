@@ -1,5 +1,7 @@
 set -o noglob
 
+[ -f /tmp/workspace/new-env-vars ] && . /tmp/workspace/new-env-vars
+
 # These variables are evaluated so the config file may contain and pass in environment variables to the parameters.
 ECS_PARAM_FAMILY=$(eval echo "$ECS_PARAM_FAMILY")
 ECS_PARAM_CLUSTER_NAME=$(eval echo "$ECS_PARAM_CLUSTER_NAME")

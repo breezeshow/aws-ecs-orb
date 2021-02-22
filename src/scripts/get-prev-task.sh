@@ -2,7 +2,8 @@ set -o noglob
 
 . $BASH_ENV
 
-. workspace/new-env-vars
+
+[ -f /tmp/workspace/new-env-vars ] && . /tmp/workspace/new-env-vars
 
 echo "Updating with $IMAGE_TAG"
 
