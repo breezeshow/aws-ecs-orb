@@ -39,6 +39,11 @@ if [ "$ECS_PARAM_PROPAGATE_TAGS" == "1" ]; then
     echo "Setting --propagate-tags"
     set -- "$@" --propagate-tags "TASK_DEFINITION"
 fi
+if [ "$ECS_PARAM_WAIT_FOR_TASK" == "1" ]; then
+    echo "Setting --query 'tasks[].taskArn' --output text"
+    set -- "$@" --query 'tasks[].taskArn' --output text
+fi
+
 if [ "$ECS_PARAM_AWSVPC" == "1" ]; then
     echo "Setting --network-configuration"
     if [ -n "$ECS_COPY_NETWORK_FROM_SERVICE" ]; then
@@ -88,4 +93,18 @@ set -- "$@" --task-definition $ECS_PARAM_TASK_DEF
 echo "Setting --cluster"
 set -- "$@" --cluster "$ECS_PARAM_CLUSTER_NAME"
 
-aws ecs run-task "$@"
+ARN_VAL=$(aws ecs run-task "$@")
+if [ "$ECS_PARAM_WAIT_FOR_TASK" == "1" ]; then
+    echo "Task has been initiated... the TaskARN is ${ARN_VAL}"
+    echo "Wait until the task's container reaches the STOPPED state..."
+    aws ecs wait tasks-stopped --cluster $ECS_PARAM_CLUSTER_NAME --tasks $ARN_VAL
+    EXIT_VAL=$(aws ecs describe-tasks --cluster $ECS_PARAM_CLUSTER_NAME --tasks $ARN_VAL --query 'tasks[0].containers[0].exitCode' --output text)
+    if [ "$EXIT_VAL" = "0" ]
+    then
+        echo "Taskexecution was successful!"
+    else
+        echo "Errors encountered while command... please check datadog for logs"
+        exit 1
+    fi
+fi
+

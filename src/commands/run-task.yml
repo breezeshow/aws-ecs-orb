@@ -119,6 +119,12 @@ parameters:
       If no value is specified, the tags are not propagated. Tags can only be propagated to the task during task creation. To add tags to a task after task creation, use the TagResource API action.
     type: boolean
     default: false
+  wait-for-task:
+    description: |
+      "Specifies whether to enable wait for the tasks exit code or fire and forget."
+    type: boolean
+    default: true
+
 steps:
   - run:
       name: Run Task
@@ -126,6 +132,7 @@ steps:
       environment:
         ECS_COPY_NETWORK_FROM_SERVICE: <<parameters.service>>
         ECS_PARAM_CLUSTER_NAME: <<parameters.cluster>>
+        ECS_PARAM_WAIT_FOR_TASK: <<parameters.wait-for-task>>
         ECS_PARAM_TASK_DEF: <<parameters.task-definition>>
         ECS_PARAM_COUNT: <<parameters.count>>
         ECS_PARAM_STARTED_BY: <<parameters.started-by>>
