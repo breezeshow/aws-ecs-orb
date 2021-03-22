@@ -43,7 +43,10 @@ if [ "$ECS_PARAM_WAIT_FOR_TASK" == "1" ]; then
     echo "Setting --query 'tasks[].taskArn' --output text"
     set -- "$@" --query 'tasks[].taskArn' --output text
 fi
-
+if [ "$ECS_PARAM_SKIP_TASK_DEF_REG" == "0" ]; then
+    echo "Setting --task-definition to previous registered TASK_DEF"
+    ECS_PARAM_TASK_DEF=$(eval echo "$CCI_ORB_AWS_ECS_REGISTERED_TASK_DFN")
+fi
 if [ "$ECS_PARAM_AWSVPC" == "1" ]; then
     echo "Setting --network-configuration"
     if [ -n "$ECS_COPY_NETWORK_FROM_SERVICE" ]; then

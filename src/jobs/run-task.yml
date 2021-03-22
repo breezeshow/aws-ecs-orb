@@ -152,6 +152,45 @@ parameters:
       If a `capacity-provider-strategy` is specified, the `launch-type` parameter must be set to an empty string.
     type: string
     default: ""
+  wait-for-task:
+    description: |
+      "Specifies whether to enable wait for the tasks exit code or fire and forget."
+    type: boolean
+    default: true
+  skip-task-definition-registration:
+    description: |
+      Whether to skip registration of a new task definition.
+    type: boolean
+    default: false
+  container-image-name-updates:
+    description: >
+      Use this to update the Docker image names and/or tag names of existing containers that had been defined in the previous task definition.
+
+      Expected format:
+      container=<container-name>,image-and-tag=<image-name>:<tag-name>|image=<image-name>|tag=<tag-name>,container=...,image-and-tag|image|tag=...,
+
+      For each container, specify only either "image-and-tag" or "image" or "tag".
+
+      If "image-and-tag" is specified, the container image will be updated to the value of the name-value pair.
+      If "image" is specified, the image tag defined in the previous task definition will be retained, if exists.
+      If "tag" is specified, the image name defined in the previous task definition will be used.
+    type: string
+    default: ''
+  container-env-var-updates:
+    description: >
+      Use this to update or set the values of environment variables that will be defined for the containers.
+      (Existing environment variables not included in this parameter will not be removed)
+
+      Expected format:
+      container=<container-name>,name=<env-var-name>,value=<env-var-value>,container=...,name=...,value=...,
+
+      Values should not contain commas.
+    type: string
+    default: ''
+  family:
+    description: Name of the task definition's family.
+    type: string
+
 steps:
   - aws-cli/setup:
       aws-access-key-id: << parameters.aws-access-key-id >>
@@ -177,3 +216,8 @@ steps:
       enable-ecs-managed-tags: << parameters.enable-ecs-managed-tags >>
       propagate-tags: << parameters.propagate-tags >>
       capacity-provider-strategy: << parameters.capacity-provider-strategy >>
+      wait-for-task: << parameters.wait-for-task >>
+      skip-task-definition-registration: << parameters.skip-task-definition-registration >>
+      container-image-name-updates: << parameters.container-image-name-updates >>
+      container-env-var-updates: << parameters.container-env-var-updates >>
+      family: << parameters.family >>
