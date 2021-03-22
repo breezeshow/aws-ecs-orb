@@ -107,7 +107,7 @@ if [ "$ECS_PARAM_WAIT_FOR_TASK" == "1" ]; then
         echo "Taskexecution was successful!"
     else
         echo "Errors encountered while command... please check datadog for logs"
-        exit 1
+        exit $EXIT_VAL
     fi
 fi
 
