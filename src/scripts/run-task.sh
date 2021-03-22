@@ -101,7 +101,7 @@ if [ "$ECS_PARAM_WAIT_FOR_TASK" == "1" ]; then
     echo "Task has been initiated... the TaskARN is ${ARN_VAL}"
     echo "Wait until the task's container reaches the STOPPED state..."
     aws ecs wait tasks-stopped --cluster $ECS_PARAM_CLUSTER_NAME --tasks $ARN_VAL
-    EXIT_VAL=$(aws ecs describe-tasks --cluster $ECS_PARAM_CLUSTER_NAME --tasks $ARN_VAL --query 'tasks[0].containers[0].exitCode' --output text)
+    EXIT_VAL=$(echo $(($(aws ecs describe-tasks --cluster $ECS_PARAM_CLUSTER_NAME --tasks $ARN_VAL --query 'tasks[0].containers[*].exitCode' --output text))))
     if [ "$EXIT_VAL" = "0" ]
     then
         echo "Taskexecution was successful!"
