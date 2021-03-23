@@ -97,9 +97,13 @@ echo "Setting --cluster"
 set -- "$@" --cluster "$ECS_PARAM_CLUSTER_NAME"
 
 ARN_VAL=$(aws ecs run-task "$@")
+TASK_ID=$(echo $ARN_VAL | cut -d '/' -f 3)
+
 if [ "$ECS_PARAM_WAIT_FOR_TASK" == "1" ]; then
     echo "Task has been initiated... the TaskARN is ${ARN_VAL}"
     echo "Wait until the task's container reaches the STOPPED state..."
+    echo "Click below for the task output"
+    echo "https://app.datadoghq.com/logs?event&index=%2A&query=task_arn%3A%22${ECS_PARAM_CLUSTER_NAME}%2F${TASK_ID}%22"
     aws ecs wait tasks-stopped --cluster $ECS_PARAM_CLUSTER_NAME --tasks $ARN_VAL
     EXIT_VAL=$(echo $(($(aws ecs describe-tasks --cluster $ECS_PARAM_CLUSTER_NAME --tasks $ARN_VAL --query 'tasks[0].containers[*].exitCode' --output text | tr -s '\t' '+'))))
     if [ "$EXIT_VAL" = "0" ]
@@ -107,6 +111,7 @@ if [ "$ECS_PARAM_WAIT_FOR_TASK" == "1" ]; then
         echo "Taskexecution was successful!"
     else
         echo "Errors encountered while command... please check datadog for logs"
+        TASK_ID=$(echo $ARN_VAL | cut -d '/' -f 3)
         exit $EXIT_VAL
     fi
 fi
