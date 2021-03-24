@@ -104,7 +104,9 @@ if [ "$ECS_PARAM_WAIT_FOR_TASK" == "1" ]; then
     echo "Wait until the task's container reaches the STOPPED state..."
     echo "Click below for the task output"
     echo "https://app.datadoghq.com/logs?event&index=%2A&query=task_arn%3A%22${ECS_PARAM_CLUSTER_NAME}%2F${TASK_ID}%22"
-    aws ecs wait tasks-stopped --cluster $ECS_PARAM_CLUSTER_NAME --tasks $ARN_VAL
+    while [ $TASK_WAITER_EXIT -eq 255 ]; do
+        TASK_WAITER_EXIT=`aws ecs wait tasks-stopped --cluster $ECS_PARAM_CLUSTER_NAME --tasks $ARN_VAL > /dev/null 2>&1; echo $?`
+    done
     EXIT_VAL=$(echo $(($(aws ecs describe-tasks --cluster $ECS_PARAM_CLUSTER_NAME --tasks $ARN_VAL --query 'tasks[0].containers[*].exitCode' --output text | tr -s '\t' '+'))))
     if [ "$EXIT_VAL" = "0" ]
     then
