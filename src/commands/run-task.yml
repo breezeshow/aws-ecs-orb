@@ -171,6 +171,7 @@ steps:
 
   - run:
       name: Run Task
+      no_output_timeout: 60m
       command: <<include(scripts/run-task.sh)>>
       environment:
         ECS_COPY_NETWORK_FROM_SERVICE: <<parameters.service>>
